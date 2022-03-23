@@ -15,7 +15,8 @@ public class TableAttribute : Attribute
 
 public interface ITable<E, TKey> where E : IEntity<TKey>
 {
-    Task<E?> QueryAsync(TKey id);
+    Task<E?> GetAsync(string partitionKey, string rowKey);
+    Task<E?> GetAsync(TKey id);
     Task<IEnumerable<E>> QueryAsync(string filter);
     Task<IEnumerable<E>> QueryAsync(Expression<Func<E, bool>> filter);
     void Insert(E entity);
@@ -74,12 +75,25 @@ public abstract class Table<E, TKey> : ITable<E, TKey> where E : class, IEntity<
         _transaction.AddAction(action);
     }
 
-    public async Task<E?> QueryAsync(TKey id)
+    public async Task<E?> GetAsync(string partitionKey, string rowKey)
+    {
+        ArgumentNullException.ThrowIfNull(partitionKey);
+        ArgumentNullException.ThrowIfNull(rowKey);
+
+        var response = await _tableClient
+            .GetEntityAsync<E>(partitionKey, rowKey);
+        return response.Value;
+    }
+
+    public async Task<E?> GetAsync(TKey id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        var response = await _tableClient
-            .GetEntityAsync<E>(id.ToString(), id.ToString());
-        return response.Value;
+        var query = _tableClient.QueryAsync<E>($"Id eq '{id}'");
+        await foreach (var entity in query)
+        {
+            return entity;
+        }
+        return null;
     }
 
     public async Task<IEnumerable<E>> QueryAsync(Expression<Func<E, bool>> filter)

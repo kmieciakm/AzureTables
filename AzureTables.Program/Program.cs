@@ -22,7 +22,7 @@ User user = new(
 userTable.Insert(user);
 await userTable.CommitAsync();
 
-User? user1 = await userTable.QueryAsync(user.Id);
+User? user1 = await userTable.GetAsync(user.Id);
 userTable.Delete(user1);
 await userTable.CommitAsync();
 
@@ -32,6 +32,8 @@ roleTable.Insert(new Role("Admin"));
 roleTable.Insert(new Role("Manager"));
 await roleTable.CommitAsync();
 
+var roleUser = await roleTable.GetAsync("Roles", "User");
+var roleAdmin = await roleTable.GetAsync("Admin");
 var roles = await roleTable.QueryAsync("PartitionKey eq 'Roles'");
 
 Console.ReadLine();
