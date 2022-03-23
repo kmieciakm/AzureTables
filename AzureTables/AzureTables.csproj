@@ -10,6 +10,8 @@
     <Description>A simple repository to interact with Azure Table Storage.</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Mateusz Kmieciak</Authors>
+    <PackageProjectUrl>https://github.com/kmieciakm/AzureTables</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kmieciakm/AzureTables</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
