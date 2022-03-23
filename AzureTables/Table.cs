@@ -88,7 +88,8 @@ public abstract class Table<E, TKey> : ITable<E, TKey> where E : class, IEntity<
     public async Task<E?> GetAsync(TKey id)
     {
         ArgumentNullException.ThrowIfNull(id);
-        var query = _tableClient.QueryAsync<E>($"Id eq '{id}'");
+
+        var query = _tableClient.QueryAsync<E>(e => e.Id.Equals(id));
         await foreach (var entity in query)
         {
             return entity;
