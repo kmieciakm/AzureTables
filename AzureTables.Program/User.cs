@@ -21,7 +21,7 @@ public class User : Entity
 }
 
 [Table("Users")]
-public class UserTable : Table<User>
+public class UserTable : Table<User, Guid>
 {
     public UserTable(AzureStorageSettings storageSettings)
         : base(storageSettings)

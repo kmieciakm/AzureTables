@@ -26,4 +26,11 @@ User? user1 = await userTable.QueryAsync(user.Id);
 userTable.Delete(user1);
 await userTable.CommitAsync();
 
+RolesTable roleTable = new RolesTable(settings);
+roleTable.Insert(new Role("User"));
+roleTable.Insert(new Role("Admin"));
+roleTable.Insert(new Role("Manager"));
+await roleTable.CommitAsync();
+
+
 Console.ReadLine();

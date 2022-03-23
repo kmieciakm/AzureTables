@@ -3,12 +3,12 @@ using Azure.Data.Tables;
 
 namespace AzureTables;
 
-interface IEntity : ITableEntity
+public interface IEntity<TKey> : ITableEntity
 {
-    public Guid Id { get; set; }
+    public TKey Id { get; set; }
 }
 
-public class Entity : IEntity
+public class Entity : IEntity<Guid>
 {
     public Guid Id { get; set; }
     public string PartitionKey

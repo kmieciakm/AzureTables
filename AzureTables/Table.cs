@@ -12,9 +12,9 @@ public class TableAttribute : Attribute
     }
 }
 
-public interface ITable<E> where E : Entity
+public interface ITable<E, TKey> where E : IEntity<TKey>
 {
-    Task<E?> QueryAsync(Guid id);
+    Task<E?> QueryAsync(TKey id);
     void Insert(E entity);
     void Delete(E entity);
     void Update(E entity);
@@ -22,7 +22,7 @@ public interface ITable<E> where E : Entity
     Task CommitAsync();
 }
 
-public abstract class Table<E> : ITable<E> where E : Entity, new()
+public abstract class Table<E, TKey> : ITable<E, TKey> where E : class, IEntity<TKey>, new()
 {
     private readonly AzureStorageSettings _storageSettings;
     private Transaction _transaction { get; }
@@ -71,8 +71,9 @@ public abstract class Table<E> : ITable<E> where E : Entity, new()
         _transaction.AddAction(action);
     }
 
-    public async Task<E?> QueryAsync(Guid id)
+    public async Task<E?> QueryAsync(TKey id)
     {
+        ArgumentNullException.ThrowIfNull(id);
         var response = await _tableClient
             .GetEntityAsync<E>(id.ToString(), id.ToString());
         return response.Value;
