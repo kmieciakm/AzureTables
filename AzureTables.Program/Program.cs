@@ -32,5 +32,6 @@ roleTable.Insert(new Role("Admin"));
 roleTable.Insert(new Role("Manager"));
 await roleTable.CommitAsync();
 
+var roles = await roleTable.QueryAsync("PartitionKey eq 'Roles'");
 
 Console.ReadLine();

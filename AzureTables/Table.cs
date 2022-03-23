@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using System.Linq.Expressions;
 
 namespace AzureTables;
 
@@ -15,6 +16,8 @@ public class TableAttribute : Attribute
 public interface ITable<E, TKey> where E : IEntity<TKey>
 {
     Task<E?> QueryAsync(TKey id);
+    Task<IEnumerable<E>> QueryAsync(string filter);
+    Task<IEnumerable<E>> QueryAsync(Expression<Func<E, bool>> filter);
     void Insert(E entity);
     void Delete(E entity);
     void Update(E entity);
@@ -77,6 +80,28 @@ public abstract class Table<E, TKey> : ITable<E, TKey> where E : class, IEntity<
         var response = await _tableClient
             .GetEntityAsync<E>(id.ToString(), id.ToString());
         return response.Value;
+    }
+
+    public async Task<IEnumerable<E>> QueryAsync(Expression<Func<E, bool>> filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+        List<E> result = new();
+        await foreach(var entity in _tableClient.QueryAsync(filter))
+        {
+            result.Add(entity);
+        }
+        return result;
+    }
+
+    public async Task<IEnumerable<E>> QueryAsync(string filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+        List<E> result = new();
+        await foreach (var entity in _tableClient.QueryAsync<E>(filter))
+        {
+            result.Add(entity);
+        }
+        return result;
     }
 
     public void Update(E entity)
