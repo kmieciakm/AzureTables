@@ -40,9 +40,9 @@ public abstract class TestBase : IDisposable
             .GetService<ITestTable>();
     }
 
-    public TestEntity GetTestEntity()
+    public TestEntity GetTestEntity(string value = "test")
     {
-        return new(Guid.NewGuid(), "test");
+        return new(Guid.NewGuid(), value);
     }
 
     public void Dispose()
