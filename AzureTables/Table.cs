@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
 using System.Linq.Expressions;
 
 namespace AzureTables;
@@ -80,9 +81,16 @@ public abstract class Table<E, TKey> : ITable<E, TKey> where E : class, IEntity<
         ArgumentNullException.ThrowIfNull(partitionKey);
         ArgumentNullException.ThrowIfNull(rowKey);
 
-        var response = await _tableClient
-            .GetEntityAsync<E>(partitionKey, rowKey);
-        return response.Value;
+        try
+        {
+            var response = await _tableClient
+                .GetEntityAsync<E>(partitionKey, rowKey);
+            return response.Value;
+        }
+        catch (RequestFailedException)
+        {
+            return null;
+        }
     }
 
     public async Task<E?> GetAsync(TKey id)

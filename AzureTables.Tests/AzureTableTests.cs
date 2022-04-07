@@ -130,6 +130,20 @@ public class AzureTableTests : TestBase
     }
 
     [Fact]
+    public async Task Get_Non_Existing_Entity_Return_Null()
+    {
+        await using var testcontainer = AzuriteBuilder.Build();
+        await testcontainer.StartAsync();
+        ITestTable? table = GetTestTable();
+
+        var entity = await table.GetAsync(Guid.NewGuid());
+        var entity2 = await table.GetAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+
+        Assert.Null(entity);
+        Assert.Null(entity2);
+    }
+
+    [Fact]
     public async Task Query_Successfully_With_OData_Filter()
     {
         await using var testcontainer = AzuriteBuilder.Build();
